@@ -1,0 +1,29 @@
+const express = require('express');
+const json2csv = require('json2csv').parse;
+
+const app = express();
+const PORT = 3000;
+
+const jsonData = [
+    { name: 'John', age: 30, city: 'New York' },
+    { name: 'Alice', age: 25, city: 'Los Angeles' },
+    { name: 'Bob', age: 35, city: 'Chicago' }
+];
+
+app.get('/download/csv', (req, res) => {
+    const csvData = json2csv(jsonData);
+    res.setHeader('Content-Disposition', 'attachment; filename=myFile.csv');
+    res.set('Content-Type', 'text/csv');
+    res.status(200).send(csvData);
+});
+
+
+app.get('/download/json', (req, res) => {
+    res.setHeader('Content-Disposition', 'attachment; filename=myFile.json');
+    res.set('Content-Type', 'application/json');
+    res.status(200).send(jsonData);
+});
+
+app.listen(PORT, () => {
+    console.log(`app is running at http://localhost:${PORT}`);
+});

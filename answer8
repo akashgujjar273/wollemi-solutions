@@ -1,0 +1,26 @@
+const express = require('express');
+const fileUpload = require('express-fileupload');
+const xlsx = require('xlsx');
+
+const app = express();
+const PORT = 3000;
+
+app.use(fileUpload());
+
+app.post('/upload', (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No file found');
+  }
+  const uploadedFile = req.files.file;
+  const workbook = xlsx.read(uploadedFile.data, { type: 'buffer' });
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+  const jsonData = xlsx.utils.sheet_to_json(worksheet);
+  console.log(jsonData);
+  
+  res.send('File uploaded and parsed successfully.');
+});
+
+app.listen(PORT, () => {
+  console.log(`app is running at http://localhost:${PORT}`);
+});

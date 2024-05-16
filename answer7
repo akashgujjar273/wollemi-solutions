@@ -1,0 +1,6 @@
+
+db.universities.createOne({ Name: "Some University", Location: "New" });
+db.universities.updateOne({ Name: "Some University" }, { $set: { Location: "New Location" } });
+db.courses.deleteOne({ Name: "Some Course" });
+
+

@@ -1,0 +1,61 @@
+db.universities.aggregate([
+    {
+        $match: { name: "xyz" }
+    },
+    {
+        $lookup: {
+            from: "courses",
+            localField: "name",
+            foreignField: "universityName",
+            as: "courses"
+        }
+    },
+    {
+        $group: {
+            _id: "$name",
+            yearWithLeastStudents: {
+                $min: "$students.year"
+            }
+        }
+    },
+    {
+        $project: {
+            levelsCourseCount: 1,
+            yearWithLeastStudents: {
+                students: {
+                    year: "$yearWithLeastStudents",
+                    student_count: "$students.student_count"
+                }
+            }
+        }
+    }
+])
+
+
+db.universities.aggregate([
+    {
+        $match: {
+            $and: [
+                { "students.year": 2020, "students.student_count": { $gt: 20000 } },
+                { "students.year": 2021, "students.student_count": { $lt: 25000 } }
+            ]
+        }
+    },
+    {
+        $lookup: {
+            from: "courses",
+            localField: "name",
+            foreignField: "universityName",
+            as: "courses"
+        }
+    },
+    {
+        $project: {
+            name: 1,
+            totalCourseCount: { $size: "$courses" }
+        }
+    },
+    {
+        $sort: { totalCourseCount: 1 }
+    }
+])
